@@ -1,8 +1,13 @@
 import Vue from 'vue'
 import VueRouter from 'vue-router'
-//import Home from '../views/Home.vue'
-import Login from '@/components/Login'
-import Top from '@/components/Top'
+import Login from '@/views/Login'
+import Top from '@/views/Top'
+import CreatePosts from '@/views/CreatePosts'
+import CreateUsers from '@/views/CreateUsers'
+import DetailPost from '@/views/DetailPost'
+import UpdatePost from '@/views/UpdatePost'
+import DetailUser from '@/views/DetailUser'
+import UpdateUser from '@/views/UpdateUser'
 
 Vue.use(VueRouter)
 
@@ -15,13 +20,39 @@ Vue.use(VueRouter)
   {
     path: '/login',
     name: 'Login',
-    // route level code-splitting
-    // this generates a separate chunk (about.[hash].js) for this route
-    // which is lazy-loaded when the route is visited.
     component: Login
-  }
+  },
+  {
+    path: '/posts/create',
+    name: 'CreatePosts',
+    component: CreatePosts
+  },
+  {
+    path: '/users/create',
+    name: 'CreateUsers',
+    component: CreateUsers
+  },
+  {
+    path: '/posts/:postId',
+    name: 'DetailPost',
+    component: DetailPost
+  },
+  {
+    path: '/posts/:postId/update',
+    name: 'UpdatePost',
+    component: UpdatePost
+  },
+  {
+    path: '/users/:userId',
+    name: 'DetailUser',
+    component: DetailUser
+  },
+  {
+    path: '/users/:userId/update',
+    name: 'UpdateUser',
+    component: UpdateUser
+  },
 ]
-
 
 const router = new VueRouter({
   mode: 'history',
