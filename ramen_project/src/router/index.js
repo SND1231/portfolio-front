@@ -52,6 +52,10 @@ Vue.use(VueRouter)
     name: 'UpdateUser',
     component: UpdateUser
   },
+  {
+    path: '*',
+    redirect: '/'
+  }
 ]
 
 const router = new VueRouter({

@@ -17,14 +17,17 @@
           cols="12"
           md="1"
         >
-          <v-avatar
-            size="60px"
-          >
-            <img
-              alt="Avatar"
-              :src="user.photoUrl"
+          <router-link :to="{name: 'DetailUser', params: {userId: user_id}}">
+            <v-avatar
+              size="60px"
+              :to="{name: 'DetailUser', params: {userId: user.id}}"
             >
-          </v-avatar>  
+              <img
+                alt="Avatar"
+                :src="user.photoUrl"
+              >
+            </v-avatar> 
+          </router-link>
           
         </v-col>
         <v-col
@@ -32,7 +35,7 @@
           cols="12"
           md="10"
         >
-          <strong >{{ user.name }}</strong>
+          <v-card-title class="white--text headline">{{ user.name }}</v-card-title>
         </v-col>
         <v-col
           cols="12"
@@ -50,7 +53,7 @@
           <v-card-actions>
             <v-spacer></v-spacer>
             <v-btn v-show="click_like" v-on:click="clickLike"><v-icon  color="pink">mdi-heart</v-icon> {{ showLikes(post.likes) }}</v-btn>
-            <v-btn v-show="!click_like" disabled><v-icon v-show="!click_like" disabled>mdi-heart</v-icon>{{ showLikes(post.likes) }}</v-btn>
+            <v-btn v-show="!click_like" v-on:click="deleteLike"><v-icon v-show="!click_like" disabled>mdi-heart</v-icon>{{ showLikes(post.likes) }}</v-btn>
             <v-btn v-show="same_user" :to="{name: 'UpdatePost', params: {postId: post.id}}" color="blue">投稿を更新</v-btn>
             <v-btn v-show="same_user" v-on:click="deletePost" color="blue">投稿を削除</v-btn>
           </v-card-actions>
@@ -100,9 +103,10 @@
         });
       await axios.get('/v1/likes/' + getCookieDataByKey("user_id") + '/' + this.post.id, config, {}
         ).then(function (response){
-          console.log(response.data.liked)
           if(response.data.liked == undefined){
             self.click_like = true;
+          }else{
+            self.like_id = response.data.id;
           }
         }).catch(err =>{
           console.log('err:', err);
@@ -117,9 +121,24 @@
     methods: {
       showLikes: function(likes) {
         if(likes == undefined){
-          return 0;
+          return 0
         }
         return likes;
+      },
+      deletePost: function() {
+        let axios = createAxios();
+        const config = {
+              headers: {
+                'Authorization': getCookieDataByKey("token")
+              }
+            };
+        axios.delete('/v1/posts/' + this.post.id + '/user/' + this.user_id , config
+          ).then(function () {
+            window.location.href = "/";
+          }).catch(err => {
+            console.log('err:', err.response.data);
+            this.message = err.response.data;
+          });
       },
       clickLike: function() {
         if(this.post.likes == undefined){
@@ -127,6 +146,7 @@
         }
         this.post.likes = this.post.likes + 1;
         this.click_like = false;
+
         let axios = createAxios();
         const config = {
               headers: {
@@ -142,18 +162,21 @@
             this.message = err.response.data;
           });
       },
-      deletePost: function() {
+      deleteLike: function() {
         let axios = createAxios();
         const config = {
               headers: {
                 'Authorization': getCookieDataByKey("token")
               }
             };
-        axios.delete('/v1/posts/' + this.post.id + '/user/' + this.user_id , config
-          ).then(function () {
-            window.location.href = "/";
+        let self = this;
+        this.click_like = true;
+
+        self.post.likes = self.post.likes -1
+        axios.delete('/v1/likes/' + self.like_id, config
+          ).then(function (response) {
+            self.post.likes = response.data.count;
           }).catch(err => {
-            console.log('err:', err.response.data);
             this.message = err.response.data;
           });
       }

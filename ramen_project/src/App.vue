@@ -26,6 +26,7 @@
       </a>
       <v-spacer></v-spacer>
       <v-card-actions>
+        <v-btn color="grey" to="/">Topに戻る</v-btn>
         <v-btn v-show="!isAuthenticated" color="grey" to="/Login">ログイン</v-btn>
         <v-btn v-show="!isAuthenticated" color="grey" v-on:click="clickSimpleLogin">簡易ログイン</v-btn>
         <v-btn v-show="!isAuthenticated" color="grey" to="/users/create">ユーザー登録</v-btn>
@@ -62,7 +63,7 @@ export default {
       window.location.href = "/";
     },
     clickSimpleLogin: function() {
-      loginUser("create_check123@local", "snd1231")
+      loginUser(process.env.VUE_APP_LOGIN_EMAIL, process.env.VUE_APP_LOGIN_PASSWORD)
     },
   },
   computed: {

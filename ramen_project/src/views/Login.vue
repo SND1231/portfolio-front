@@ -10,7 +10,7 @@
       </v-form>
     </v-card-text>
     <v-card-actions>
-      <v-btn class="info mx-auto" v-on:click="clickLogin">ログイン</v-btn>
+      <v-btn class="info mx-auto" @click="clickLogin">ログイン</v-btn>
     </v-card-actions>
     <v-card-text class="red--text">
       <v-layout justify-center>

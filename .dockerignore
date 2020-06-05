@@ -6,9 +6,7 @@
 # Recommended template: Node.gitignore
 
 node_modules/
-dist/
 npm-debug.log
 yarn-error.log
-.env
 
 # End of https://www.gitignore.io/api/vuejs

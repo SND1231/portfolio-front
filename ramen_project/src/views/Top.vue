@@ -6,6 +6,28 @@
    fill-height
    v-else
   >
+    <v-row
+      class="lighten-4" style="height: 200px;"
+      justify="center" align-content="center"
+    >
+      <v-col md=4>
+        <v-text-field
+          v-model="search_title"
+          label="タイトル検索"
+          outlined
+        ></v-text-field>
+      </v-col>
+      <v-col md=12>
+        <v-layout justify-center>
+          <v-btn class="white--text" color="blue" @click="searchTitle">検索</v-btn>
+        </v-layout>
+      </v-col>
+      <v-col md=12>
+        <v-layout class="red--text" justify-center>
+          {{ no_data_message }} 
+        </v-layout>
+      </v-col>
+    </v-row>
     <v-pagination
       v-model="page"
       :length="length"
@@ -59,15 +81,21 @@
   import getCookieDataByKey from "@/js/getCookieData.js"
   import Loading from "@/components/Loading";
 
-  async function getPosts(page){
+  async function getPosts(page, params){
     let axios = createAxios();
     let posts = [];
     let length = 0;
-    let limit = 3;
-    await axios.get('/v1/posts', {params: {limit:limit, offset:page}}
+
+    console.log(params)
+
+    await axios.get('/v1/posts', {params: params}
       ).then(function (response) {
         posts = response.data.posts;
-        length = Math.ceil(response.data.count/limit);
+        if(response.data.count != undefined){
+          length = Math.ceil(response.data.count/params["limit"]);
+        }else{
+          length = 0;
+        }
       }).catch(err => {
         console.log('err:', err.response);
       });
@@ -83,11 +111,15 @@
         posts: [],
         page: 1,
         length: 0,
+        limit: 3,
+        search_title: "",
+        no_data_message: "",
         loading: true,
       }
     },
     mounted () {
-      getPosts(this.page).then(data => {
+      this.params = {limit: this.limit, offset: this.page}
+      getPosts(this.page, this.params).then(data => {
         this.posts = data.posts
         this.length = data.length
         this.loading = false;
@@ -95,7 +127,8 @@
     },
     methods: {
       showPage:  function () {
-        getPosts(this.page).then(data => {
+        this.params["offset"] = this.page;
+        getPosts(this.page, this.params).then(data => {
           this.posts = data.posts
           this.length = data.length
         });
@@ -105,6 +138,19 @@
           return 0
         }
         return likes
+      },
+      searchTitle: function() {
+        this.no_data_message = "";
+        this.params["searchTitle"] = this.search_title;
+        getPosts(this.page, this.params).then(data => {
+          if(data.length == 0){
+            this.no_data_message = "検索結果は0件です"
+            return
+          }
+          this.posts = data.posts
+          this.length = data.length
+        });
+
       }
     },
     computed: {

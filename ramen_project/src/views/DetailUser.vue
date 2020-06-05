@@ -16,7 +16,7 @@
           md="2"
         >
           <v-avatar
-            size="120px"
+            size="100px"
           >
             <img
               alt="Avatar"
@@ -29,12 +29,14 @@
           cols="12"
           md="9"
         >
-          <v-card-title class="display-2 text--primary">{{ user.name }}</v-card-title>
+          <v-card-title class="headline text--primary">{{ user.name }}</v-card-title>
         </v-col>
       </v-row>
       <v-card-actions>
         <v-spacer></v-spacer>
-        <v-btn class="white--text"
+        <v-btn
+         v-show="same_user"
+         class="white--text"
          :to="{name: 'UpdateUser', params: {userId: user.id}}"
          color="blue">
          ユーザ情報を更新
@@ -102,10 +104,11 @@
     data: () => ({
       posts: [],
       user: {"photoUrl": ""},
-      user_id: getCookieDataByKey("user_id"),
+      user_id: null,
       page: 1,
       length: 0,
       loading: true,
+      same_user: false,
     }),
     mounted: async function () {
       let self = this;
@@ -116,13 +119,12 @@
               'Authorization': getCookieDataByKey("token")
             }
           };
+      self.user_id = self.$route.params.userId;
     
       await  axios.get('/v1/posts', {params: {limit:limit, offset:self.page, id: self.user_id}}
         ).then(function (response) {
-          self.posts = response.data.posts
+          self.posts = response.data.posts;
           self.length = Math.ceil(response.data.count/limit);
-          console.log(response.data)
-          console.log(self.length)
         }).catch(err => {
           console.log('err:', err.response);
         });
@@ -131,6 +133,10 @@
         ).then(function (response){
           self.user = response.data.user;
           self.loading = false;
+
+          if (self.user.id == getCookieDataByKey("user_id")){
+            self.same_user = true;
+          }
         }).catch(err =>{
           console.log('err:', err);
         });
@@ -153,7 +159,8 @@
           return 0
         }
         return likes
-      }
+      },
+      
     },
   }
 </script>
