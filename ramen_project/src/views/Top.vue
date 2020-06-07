@@ -141,7 +141,7 @@
       },
       searchTitle: function() {
         this.no_data_message = "";
-        this.params["searchTitle"] = this.search_title;
+        this.params["title"] = this.search_title;
         getPosts(this.page, this.params).then(data => {
           if(data.length == 0){
             this.no_data_message = "検索結果は0件です"
