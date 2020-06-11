@@ -34,7 +34,8 @@
       :total-visible="10"
       class="my-4"
       @input = "showPage"
-    ></v-pagination>
+    >
+    </v-pagination>
     <v-row dense 
       class="mb-6"
       justify="center"
@@ -47,28 +48,23 @@
        cols="12" md="8"
       >
         <v-card>
-          <v-img
-            :src="post.photoUrl"
-            class="white--text align-end"
-            gradient="to bottom, rgba(0,0,0,.1), rgba(0,0,0,.5)"
-            height="400px"
-          >
-            <v-card-title v-text="post.title"></v-card-title>
-            <v-row>
-              <v-col cols="8">
-                <v-card-text>
-                  <v-icon color="white">mdi-heart</v-icon>{{ showLikes(post.likes) }} 
-                </v-card-text>
-              </v-col>
-              <v-col cols="4">
-                <v-card-actions>
-                  <v-spacer></v-spacer>
-                  <v-btn v-show="!isAuthenticated" to="/login">詳細を開く(要ログイン)</v-btn>
-                  <v-btn v-show="isAuthenticated" :to="{name: 'DetailPost', params: {postId: post.id}}">詳細を開く</v-btn>
-                </v-card-actions>
-              </v-col>
-            </v-row>    
-          </v-img>
+          <router-link :to="{name: 'DetailPost', params: {postId: post.id}}">
+            <v-img
+              :src="post.photoUrl"
+              class="white--text align-end"
+              gradient="to bottom, rgba(0,0,0,.1), rgba(0,0,0,.5)"
+              height="400px"
+            >
+              <v-card-title v-text="post.title"></v-card-title>
+              <v-row>
+                <v-col cols="8">
+                  <v-card-text>
+                    <v-icon color="white">mdi-heart</v-icon>{{ showLikes(post.likes) }} 
+                  </v-card-text>
+                </v-col>
+              </v-row>    
+            </v-img>
+          </router-link>
         </v-card>
       </v-col>
     </v-row>
@@ -164,3 +160,9 @@
     }
   }
 </script>
+
+<style>
+  a {
+     text-decoration: none;
+  }
+</style>

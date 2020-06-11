@@ -55,8 +55,36 @@
             <v-btn v-show="click_like" v-on:click="clickLike"><v-icon  color="pink">mdi-heart</v-icon> {{ showLikes(post.likes) }}</v-btn>
             <v-btn v-show="!click_like" v-on:click="deleteLike"><v-icon v-show="!click_like" disabled>mdi-heart</v-icon>{{ showLikes(post.likes) }}</v-btn>
             <v-btn v-show="same_user" :to="{name: 'UpdatePost', params: {postId: post.id}}" color="blue">投稿を更新</v-btn>
-            <v-btn v-show="same_user" v-on:click="deletePost" color="blue">投稿を削除</v-btn>
+            <v-btn v-show="same_user" @click.stop="dialog = true" color="blue">投稿を削除</v-btn>
           </v-card-actions>
+          <v-dialog
+            v-model="dialog"
+            max-width="290"
+          >
+            <v-card>
+              <v-card-title class="headline">
+                本当に削除しますか？
+              </v-card-title>
+              <v-card-actions>
+                <v-spacer></v-spacer>
+                <v-btn
+                  color="green darken-1"
+                  text
+                  @click="dialog = false"
+                >
+                  キャンセル
+                </v-btn>
+
+                <v-btn
+                  color="green darken-1"
+                  text
+                  @click="deletePost"
+                >
+                  削除
+                </v-btn>
+              </v-card-actions>
+            </v-card>
+          </v-dialog>
         </v-col>
       </v-row>
     </v-container>
@@ -77,7 +105,8 @@
       click_like: false,
       like_id: null,
       same_user: false,
-      loading: true
+      loading: true,
+      dialog: false,
     }),
     components: { Loading },
     mounted: async function () {
