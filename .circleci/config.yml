@@ -10,7 +10,7 @@ jobs:
           command: docker-compose build
       - run:
           name: Tag to latest
-          command: docker tag project_user:latest ${DOCKER_USER}/front:latest
+          command: docker tag project_frontend:latest ${DOCKER_USER}/front:latest
       - run:
           name: Docker Login
           command: docker login -u ${DOCKER_USER} -p ${DOCKER_PASS}
