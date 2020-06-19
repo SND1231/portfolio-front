@@ -119,7 +119,7 @@
       let self = this;
       await axios.get('/v1/posts/' + this.$route.params.postId, config, {}
         ).then(function (response) {
-          self.post = response.data.post;
+          self.post    = response.data.post;
           self.user_id = response.data.post.userId;
         }).catch(err => {
           console.log(err);
@@ -185,6 +185,7 @@
         let self = this;
         axios.post('/v1/likes', {"userId": getCookieDataByKey("user_id"), "postId": self.post.id}, config
           ).then(function (response) {
+            self.like_id    = response.data.id
             self.post.likes = response.data.count;
           }).catch(err => {
             console.log('err:', err.response.data);
@@ -204,7 +205,9 @@
         self.post.likes = self.post.likes -1
         axios.delete('/v1/likes/' + self.like_id, config
           ).then(function (response) {
+            console.log(response)
             self.post.likes = response.data.count;
+            self.like_id    = null
           }).catch(err => {
             this.message = err.response.data;
           });
