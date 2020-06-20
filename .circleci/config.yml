@@ -7,7 +7,9 @@ jobs:
       - checkout
       - run:
           name: Build
-          command: docker-compose build
+          command: docker-compose build --build-arg CLOUDINARY_API_KEY=$CLOUDINARY_API_KEY \
+                   --build-arg CLOUD_NAME=$CLOUD_NAME --build-arg API_ENDPOINT=$API_ENDPOINT \
+                   --build-arg LOGIN_EMAIL=$LOGIN_EMAIL --build-arg LOGIN_PASSWORD=$LOGIN_PASSWORD
       - run:
           name: Tag to latest
           command: docker tag project_frontend:latest ${DOCKER_USER}/front:latest
