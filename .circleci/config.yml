@@ -1,0 +1,25 @@
+version: 2.1
+
+jobs:
+  image-push:
+    machine: true
+    steps:
+      - checkout
+      - run:
+          name: Build
+          command: docker-compose build --build-arg CLOUDINARY_API_KEY=$CLOUDINARY_API_KEY --build-arg CLOUD_NAME=$CLOUD_NAME --build-arg API_ENDPOINT=$API_ENDPOINT frontend
+      - run:
+          name: Tag to latest
+          command: docker tag project_frontend:latest ${DOCKER_USER}/front:latest
+      - run:
+          name: Docker Login
+          command: docker login -u ${DOCKER_USER} -p ${DOCKER_PASS}
+      - run:
+          name: Push image to registory
+          command: docker push ${DOCKER_USER}/front
+workflows:
+  version: 2.1
+  build-test-and-deploy:
+    jobs:
+     - image-push:
+          context: ramen_app
