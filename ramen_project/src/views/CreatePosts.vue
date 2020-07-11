@@ -1,6 +1,6 @@
 <template>
   <v-container>
-    <v-form ref="create_posts_form">
+    <v-form ref="createPostsForm">
       <v-row>
         <v-col
           cols="12"
@@ -9,7 +9,7 @@
           <v-text-field
             v-model="title"
             label="タイトル(30字以下)"
-            :rules="[value_required, limit_length_title]"
+            :rules="[valueRequired, limitLengthTitle]"
           ></v-text-field>
         </v-col>
         <v-col cols="12">
@@ -17,7 +17,7 @@
             v-model="content"
             color="teal"
             outlined
-            :rules="[counter_required, limit_length_content]"
+            :rules="[counterRequired, limitLengthContent]"
           >
             <template v-slot:label >
               <div>
@@ -30,7 +30,7 @@
           cols="12"
           sm="8"
         >
-          <v-file-input @change="selectedFile" show-size counter multiple :rules="[value_required]" label="写真ファイル"></v-file-input>
+          <v-file-input @change="selectedFile" show-size counter multiple :rules="[valueRequired]" label="写真ファイル"></v-file-input>
         </v-col>
       </v-row>
     </v-form>
@@ -51,14 +51,14 @@
       content: "",
       file: null,
       message: "",
-      value_required: value => !!value || "必ず入力してください",
-      counter_required: counter => !!counter || "必ず入力してください", 
-      limit_length_title: value => value.length <= 30,
-      limit_length_content: counter => counter.length <= 400 || "400字以内にしてください"
+      valueRequired: value => !!value || "必ず入力してください",
+      counterRequired: counter => !!counter || "必ず入力してください", 
+      limitLengthTitle: value => value.length <= 30,
+      limitLengthContent: counter => counter.length <= 400 || "400字以内にしてください"
     }),
     methods: {
       createPosts: async function() {
-        if (!this.$refs.create_posts_form.validate()){
+        if (!this.$refs.createPostsForm.validate()){
           return
         }
         
@@ -73,11 +73,11 @@
               'Authorization': getCookieDataByKey("token")
             }
           };
-          const post_data = {"title": this.title, "content": this.content,
-                            "photoUrl": url,"userId": getCookieDataByKey("user_id")
+          const postData = {"title": this.title, "content": this.content,
+                            "photoUrl": url,"userId": getCookieDataByKey("userId")
                             };
           
-          axios.post('/v1/posts', post_data, config
+          axios.post('/v1/posts', postData, config
             ).then(function () {
               window.location.href = "/";
             }).catch(err => {

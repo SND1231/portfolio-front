@@ -12,19 +12,19 @@
     >
       <v-col md=4>
         <v-text-field
-          v-model="search_title"
+          v-model="searchTitle"
           label="タイトル検索"
           outlined
         ></v-text-field>
       </v-col>
       <v-col md=12>
         <v-layout justify-center>
-          <v-btn class="white--text" color="blue" @click="searchTitle">検索</v-btn>
+          <v-btn class="white--text" color="blue" @click="searchTitles">検索</v-btn>
         </v-layout>
       </v-col>
       <v-col md=12>
         <v-layout class="red--text" justify-center>
-          {{ no_data_message }} 
+          {{ noDataMessage }} 
         </v-layout>
       </v-col>
     </v-row>
@@ -108,8 +108,8 @@
         page: 1,
         length: 0,
         limit: 3,
-        search_title: "",
-        no_data_message: "",
+        searchTitle: "",
+        noDataMessage: "",
         loading: true,
       }
     },
@@ -135,12 +135,12 @@
         }
         return likes
       },
-      searchTitle: function() {
-        this.no_data_message = "";
-        this.params["title"] = this.search_title;
+      searchTitles: function() {
+        this.noDataMessage = "";
+        this.params["title"] = this.searchTitle;
         getPosts(this.page, this.params).then(data => {
           if(data.length == 0){
-            this.no_data_message = "検索結果は0件です"
+            this.noDataMessage = "検索結果は0件です"
             return
           }
           this.posts = data.posts

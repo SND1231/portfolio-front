@@ -11,7 +11,7 @@ import UpdateUser from '@/views/UpdateUser'
 
 Vue.use(VueRouter)
 
-  const routes = [
+const routes = [
   {
     path: '/',
     name: 'Top',
@@ -25,7 +25,8 @@ Vue.use(VueRouter)
   {
     path: '/posts/create',
     name: 'CreatePosts',
-    component: CreatePosts
+    component: CreatePosts,
+    meta: { requiredAuth: true }
   },
   {
     path: '/users/create',
@@ -35,22 +36,26 @@ Vue.use(VueRouter)
   {
     path: '/posts/:postId',
     name: 'DetailPost',
-    component: DetailPost
+    component: DetailPost,
+    meta: { requiredAuth: true }
   },
   {
     path: '/posts/:postId/update',
     name: 'UpdatePost',
-    component: UpdatePost
+    component: UpdatePost,
+    meta: { requiredAuth: true }
   },
   {
     path: '/users/:userId',
     name: 'DetailUser',
-    component: DetailUser
+    component: DetailUser,
+    meta: { requiredAuth: true }
   },
   {
     path: '/users/:userId/update',
     name: 'UpdateUser',
-    component: UpdateUser
+    component: UpdateUser,
+    meta: { requiredAuth: true }
   },
   {
     path: '*',

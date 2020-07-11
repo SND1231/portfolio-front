@@ -17,7 +17,7 @@
           cols="12"
           md="1"
         >
-          <router-link :to="{name: 'DetailUser', params: {userId: user_id}}">
+          <router-link :to="{name: 'DetailUser', params: {userId: userId}}">
             <v-avatar
               size="60px"
               :to="{name: 'DetailUser', params: {userId: user.id}}"
@@ -52,10 +52,10 @@
           <v-card-text class=".font-weight-bold" style="white-space:pre-wrap; word-wrap:break-word;" v-text="post.content"></v-card-text>
           <v-card-actions>
             <v-spacer></v-spacer>
-            <v-btn v-show="click_like" v-on:click="clickLike"><v-icon  color="pink">mdi-heart</v-icon> {{ showLikes(post.likes) }}</v-btn>
-            <v-btn v-show="!click_like" v-on:click="deleteLike"><v-icon v-show="!click_like" disabled>mdi-heart</v-icon>{{ showLikes(post.likes) }}</v-btn>
-            <v-btn v-show="same_user" :to="{name: 'UpdatePost', params: {postId: post.id}}" color="blue">投稿を更新</v-btn>
-            <v-btn v-show="same_user" @click.stop="dialog = true" color="blue">投稿を削除</v-btn>
+            <v-btn v-show="clickLike" v-on:click="createLike"><v-icon  color="pink">mdi-heart</v-icon> {{ showLikes(post.likes) }}</v-btn>
+            <v-btn v-show="!clickLike" v-on:click="deleteLike"><v-icon v-show="!clickLike" disabled>mdi-heart</v-icon>{{ showLikes(post.likes) }}</v-btn>
+            <v-btn v-show="sameUser" :to="{name: 'UpdatePost', params: {postId: post.id}}" color="blue">投稿を更新</v-btn>
+            <v-btn v-show="sameUser" @click.stop="dialog = true" color="blue">投稿を削除</v-btn>
           </v-card-actions>
           <v-dialog
             v-model="dialog"
@@ -101,10 +101,10 @@
     data: () => ({
       post: {"title": ""},
       user: {"photoUrl": ""},
-      user_id: null,
-      click_like: false,
-      like_id: null,
-      same_user: false,
+      userId: null,
+      clickLike: false,
+      likeId: null,
+      sameUser: false,
       loading: true,
       dialog: false,
     }),
@@ -120,29 +120,29 @@
       await axios.get('/v1/posts/' + this.$route.params.postId, config, {}
         ).then(function (response) {
           self.post    = response.data.post;
-          self.user_id = response.data.post.userId;
+          self.userId = response.data.post.userId;
         }).catch(err => {
           console.log(err);
         });
-      await axios.get('/v1/users/' + this.user_id, config, {}
+      await axios.get('/v1/users/' + this.userId, config, {}
         ).then(function (response){
           self.user = response.data.user;
         }).catch(err =>{
           console.log('err:', err);
         });
-      await axios.get('/v1/likes/' + getCookieDataByKey("user_id") + '/' + this.post.id, config, {}
+      await axios.get('/v1/likes/' + getCookieDataByKey("userId") + '/' + this.post.id, config, {}
         ).then(function (response){
           if(response.data.liked == undefined){
-            self.click_like = true;
+            self.clickLike = true;
           }else{
-            self.like_id = response.data.id;
+            self.likeId = response.data.id;
           }
         }).catch(err =>{
           console.log('err:', err);
         });
       
-      if (this.user_id == getCookieDataByKey("user_id")){
-        this.same_user = true;
+      if (this.userId == getCookieDataByKey("userId")){
+        this.sameUser = true;
       }
 
       this.loading = false;
@@ -161,7 +161,7 @@
                 'Authorization': getCookieDataByKey("token")
               }
             };
-        axios.delete('/v1/posts/' + this.post.id + '/user/' + this.user_id , config
+        axios.delete('/v1/posts/' + this.post.id + '/user/' + this.userId , config
           ).then(function () {
             window.location.href = "/";
           }).catch(err => {
@@ -169,12 +169,12 @@
             this.message = err.response.data;
           });
       },
-      clickLike: function() {
+      createLike: function() {
         if(this.post.likes == undefined){
           this.post.likes = 0
         }
         this.post.likes = this.post.likes + 1;
-        this.click_like = false;
+        this.clickLike = false;
 
         let axios = createAxios();
         const config = {
@@ -183,9 +183,9 @@
               }
             };
         let self = this;
-        axios.post('/v1/likes', {"userId": getCookieDataByKey("user_id"), "postId": self.post.id}, config
+        axios.post('/v1/likes', {"userId": getCookieDataByKey("userId"), "postId": self.post.id}, config
           ).then(function (response) {
-            self.like_id    = response.data.id
+            self.likeId    = response.data.id
             self.post.likes = response.data.count;
           }).catch(err => {
             console.log('err:', err.response.data);
@@ -200,14 +200,14 @@
               }
             };
         let self = this;
-        this.click_like = true;
+        this.clickLike = true;
 
         self.post.likes = self.post.likes -1
-        axios.delete('/v1/likes/' + self.like_id, config
+        axios.delete('/v1/likes/' + self.likeId, config
           ).then(function (response) {
             console.log(response)
             self.post.likes = response.data.count;
-            self.like_id    = null
+            self.likeId    = null
           }).catch(err => {
             this.message = err.response.data;
           });

@@ -1,7 +1,7 @@
 <template>
   <Loading v-if="loading"></Loading>
   <v-container v-else>
-    <v-form ref="update_users_form">
+    <v-form ref="updateUsersForm">
       <v-row>
         <v-col
           cols="12"
@@ -38,11 +38,11 @@
     data: () => ({
       name: "",
       file: null,
-      photo_url: null,
+      photoUrl: null,
       message: "",
       loading: true,
-      user_id: getCookieDataByKey("user_id"),
-      value_required: value => !!value || "必ず入力してください",
+      userId: getCookieDataByKey("userId"),
+      valueRequired: value => !!value || "必ず入力してください",
       userNameRules:[
         value => !!value || "必ず入力してください",
         value => value.length <= 20 || "20字以下にしてください",
@@ -58,7 +58,7 @@
           };
       let self = this; 
 
-      await axios.get('/v1/users/' + self.user_id, config, {}
+      await axios.get('/v1/users/' + self.userId, config, {}
         ).then(function (response){
           self.name = response.data.user.name;
           self.loading = false;
@@ -68,7 +68,7 @@
     },
     methods: {
       createUsers: function() {
-        if (!this.$refs.update_users_form.validate()){
+        if (!this.$refs.updateUsersForm.validate()){
           return
         }
         
@@ -80,15 +80,15 @@
               'Authorization': getCookieDataByKey("token")
             }
           };
-          let photo_url = url
+          let photoUrl = url
           if (url == null){
-            photo_url = self.photo_url
+            photoUrl = self.photoUrl
           }
-          const post_data = {"name": this.name, "photoUrl": photo_url};
+          const postData = {"name": this.name, "photoUrl": photoUrl};
           
-          axios.put('/v1/users/' + self.user_id , post_data, config
+          axios.put('/v1/users/' + self.userId , postData, config
             ).then(function () {
-              window.location.href = "/users/" + self.user_id;
+              window.location.href = "/users/" + self.userId;
             }).catch(err => {
               console.log('err:', err.response.data);
               this.message = err.response.data;
