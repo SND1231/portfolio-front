@@ -1,6 +1,9 @@
 <template>
   <v-container>
-    <v-form ref="createPostsForm">
+    <v-form
+      ref="createPostsForm"
+      dark
+    >
       <v-row>
         <v-col
           cols="12"
@@ -41,60 +44,59 @@
 </template>
 
 <script>
-  import createAxios from '@/js/createAxios.js'
-  import getCookieDataByKey from "@/js/getCookieData.js"
-  import uploadFile from "@/js/upload.js"
+import createAxios from '@/js/createAxios.js'
+import getCookieDataByKey from "@/js/getCookieData.js"
+import uploadFile from "@/js/upload.js"
 
-  export default {
-    data: () => ({
-      title: "",
-      content: "",
-      file: null,
-      message: "",
-      valueRequired: value => !!value || "必ず入力してください",
-      counterRequired: counter => !!counter || "必ず入力してください", 
-      limitLengthTitle: value => value.length <= 30,
-      limitLengthContent: counter => counter.length <= 400 || "400字以内にしてください"
-    }),
-    methods: {
-      createPosts: async function() {
-        if (!this.$refs.createPostsForm.validate()){
+export default {
+  data: () => ({
+    title: "",
+    content: "",
+    file: null,
+    message: "",
+    valueRequired: value => !!value || "必ず入力してください",
+    counterRequired: counter => !!counter || "必ず入力してください", 
+    limitLengthTitle: value => value.length <= 30,
+    limitLengthContent: counter => counter.length <= 400 || "400字以内にしてください"
+  }),
+  methods: {
+    createPosts: async function() {
+      if (!this.$refs.createPostsForm.validate()){
+        return
+      }
+      
+      uploadFile(this.file).then(url => {
+        if (url == null){
           return
         }
-        
-        uploadFile(this.file).then(url => {
-          if (url == null){
-            return
-          }
 
-          var axios = createAxios();
-          const config = {
-            headers: {
-              'Authorization': getCookieDataByKey("token")
-            }
-          };
-          const postData = {"title": this.title, "content": this.content,
-                            "photoUrl": url,"userId": getCookieDataByKey("userId")
-                            };
-          
-          axios.post('/v1/posts', postData, config
-            ).then(function () {
-              window.location.href = "/";
-            }).catch(err => {
-              console.log('err:', err.response.data);
-              this.message = err.response.data;
-            });
+        var axios = createAxios();
+        const config = {
+          headers: {
+            'Authorization': getCookieDataByKey("token")
+          }
+        };
+        const postData = {"title": this.title, "content": this.content,
+                          "photoUrl": url,"userId": getCookieDataByKey("userId")
+                          };
+        
+        axios.post('/v1/posts', postData, config
+          ).then(function () {
+            window.location.href = "/";
           }).catch(err => {
-            console.log(err);
+            console.log('err:', err.response.data);
+            this.message = err.response.data;
           });
-      },
-      selectedFile: function(e){
-        let file = e[0];
-        console.log(file);
-        console.log(typeof file);
-        this.file = file;
-      },
-    }
+        }).catch(err => {
+          console.log(err);
+        });
+    },
+    selectedFile: function(e){
+      let file = e[0];
+      console.log(file);
+      console.log(typeof file);
+      this.file = file;
+    },
   }
-  
+}
 </script>

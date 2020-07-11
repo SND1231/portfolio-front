@@ -4,6 +4,7 @@
     max-width="800"
     class="mx-auto"
     v-else
+    dark
   >
     <v-container>
       <v-row
@@ -29,7 +30,7 @@
           cols="12"
           md="9"
         >
-          <v-card-title class="headline text--primary">{{ user.name }}</v-card-title>
+          <v-card-title class="white--text headline">{{ user.name }}</v-card-title>
         </v-col>
       </v-row>
       <v-card-actions>
@@ -39,7 +40,7 @@
          class="white--text"
          :to="{name: 'UpdateUser', params: {userId: user.id}}"
          color="blue">
-         ユーザ情報を更新
+          <v-icon  color="white">mdi-update</v-icon>ユーザ情報を更新
         </v-btn>
       </v-card-actions>
 

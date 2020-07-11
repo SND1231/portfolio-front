@@ -1,6 +1,9 @@
 <template>
   <v-container>
-    <v-form ref="createUsersForm">
+    <v-form
+      ref="createUsersForm"
+      dark
+    >
       <v-row>
         <v-col
           cols="12"
@@ -41,7 +44,9 @@
       </v-row>
     </v-form>
     <div class="text-right">
-      <v-btn class="ma-2 white--text" color="blue" v-on:click="createUsers">ユーザ登録</v-btn>
+      <v-btn class="ma-2 white--text" color="blue" v-on:click="createUsers">
+        ユーザ登録
+      </v-btn>
     </div>
   </v-container>
 </template>
