@@ -49,7 +49,11 @@
               height="400px"
             >
           </v-img>
-          <v-card-text class=".font-weight-bold" style="white-space:pre-wrap; word-wrap:break-word;" v-text="post.content"></v-card-text>
+          <v-card-text 
+            class=".font-weight-bold"
+            style="white-space:pre-wrap; word-wrap:break-word;"
+            v-text="post.content">
+          </v-card-text>
           <v-card-actions>
             <v-spacer></v-spacer>
             <v-btn v-show="clickLike" v-on:click="createLike">
@@ -94,7 +98,81 @@
             </v-card>
           </v-dialog>
         </v-col>
+        <v-col
+          cols="12"
+          md="12"
+        >
+        </v-col>
       </v-row>
+      <v-layout justify-center>
+        <title>コメント</title>
+      </v-layout>
+      <v-pagination
+        v-model="page"
+        :length="length"
+        :total-visible="10"
+        class="my-4"
+        v-show="commentsVisible"
+        @input = "showComments"
+      ></v-pagination>
+      <v-row dense 
+        class="mb-6"
+        justify="center"
+        v-show="commentsVisible"
+      >
+        <v-col
+        class ="pt-10"
+        v-model="comments"
+        v-for="comment in comments"
+        :key="comment.id"
+        cols="12" md="8"
+        >
+          <v-card>
+            <v-card-actions>
+              <v-list-item class="grow">
+                <router-link :to="{name: 'DetailUser', params: {userId: comment.userId}}">
+                  <v-list-item-avatar color="grey darken-3">
+                    <v-img to="/about"
+                      :src="comment.photoUrl"
+                      class="elevation-6"
+                    >
+                    </v-img>
+                  </v-list-item-avatar>
+                </router-link>
+                <v-list-item-content>
+                  <v-list-item-title>{{ comment.name }}</v-list-item-title>
+                </v-list-item-content>
+              </v-list-item>
+            </v-card-actions>
+            
+            <v-card-text
+              class=".font-weight-bold"
+              style="white-space:pre-wrap; word-wrap:break-word;"
+            >
+              {{ comment.content }}
+            </v-card-text>
+          </v-card>
+        </v-col>
+      </v-row>
+      <v-form
+        ref="createCommentForm"
+      >
+        <v-textarea
+            v-model="content"
+            color="teal"
+            outlined
+            :rules="[counterRequired, limitLengthContent]"
+        >
+          <template v-slot:label >
+            <div>
+              コメント作成(100字以下)
+            </div>
+          </template>
+        </v-textarea>
+      </v-form>
+      <div class="text-right">
+        <v-btn class="ma-2 white--text" color="blue" v-on:click="createComment">コメント作成</v-btn>
+      </div>
     </v-container>
   </v-card>
 </template>
@@ -107,14 +185,22 @@
   export default {
     name: 'DetailPost',
     data: () => ({
-      post: {"title": ""},
-      user: {"photoUrl": ""},
+      post: {},
+      user: {},
       userId: null,
       clickLike: false,
       likeId: null,
       sameUser: false,
       loading: true,
       dialog: false,
+      commentsVisible: false,
+      comments: [],
+      page: 1,
+      length: 0,
+      limit: 3,
+      content:"",
+      counterRequired: counter => !!counter || "必ず入力してください",
+      limitLengthContent: counter => counter.length <= 100 || "100字以内にしてください"
     }),
     components: { Loading },
     mounted: async function () {
@@ -125,6 +211,8 @@
             }
           };
       let self = this;
+      let userId = getCookieDataByKey("userId")
+
       await axios.get('/v1/posts/' + this.$route.params.postId, config, {}
         ).then(function (response) {
           self.post    = response.data.post;
@@ -132,13 +220,15 @@
         }).catch(err => {
           console.log(err);
         });
+  
       await axios.get('/v1/users/' + this.userId, config, {}
         ).then(function (response){
           self.user = response.data.user;
         }).catch(err =>{
           console.log('err:', err);
         });
-      await axios.get('/v1/likes/' + getCookieDataByKey("userId") + '/' + this.post.id, config, {}
+
+      await axios.get('/v1/likes/' + userId + '/' + this.post.id, config, {}
         ).then(function (response){
           if(response.data.liked == undefined){
             self.clickLike = true;
@@ -148,8 +238,22 @@
         }).catch(err =>{
           console.log('err:', err);
         });
-      
-      if (this.userId == getCookieDataByKey("userId")){
+
+      config.params = {limit: self.limit, offset: self.page}
+      await axios.get('/v1/posts/' + this.post.id + '/comments', config, {}
+        ).then(function (response){
+          self.comments = response.data.comments;
+          if(response.data.count != undefined){
+            self.length = Math.ceil(response.data.count/self.limit);
+            self.commentsVisible = true;
+          }else{
+            self.length = 0;
+          }
+        }).catch(err =>{
+          console.log('err:', err);
+        });
+
+      if (this.userId == userId){
         this.sameUser = true;
       }
 
@@ -213,11 +317,54 @@
         self.post.likes = self.post.likes -1
         axios.delete('/v1/likes/' + self.likeId, config
           ).then(function (response) {
-            console.log(response)
             self.post.likes = response.data.count;
-            self.likeId    = null
+            self.likeId    = null;
           }).catch(err => {
             this.message = err.response.data;
+          });
+      },
+      showComments: async function() {
+        let axios = createAxios();
+        const config = {
+              headers: {
+                'Authorization': getCookieDataByKey("token")
+              }
+            };
+        let self = this;
+
+        config.params = {limit: self.limit, offset: self.page};
+        await axios.get('/v1/posts/' + this.post.id + '/comments', config, {}
+          ).then(function (response){
+            self.comments = response.data.comments;
+            if(response.data.count != undefined){
+              self.length = Math.ceil(response.data.count/self.limit);
+              self.commentsVisible = true;
+            }else{
+              self.length = 0;
+            }
+          }).catch(err =>{
+            console.log('err:', err);
+          });
+      },
+      createComment: async function() {
+        if (!this.$refs.createCommentForm.validate()){
+          return
+        }
+
+        var axios = createAxios();
+        const config = {
+          headers: {
+            'Authorization': getCookieDataByKey("token")
+          }
+        };
+        const postData = {"content": this.content,
+                          "userId": getCookieDataByKey("userId")
+                         };
+        axios.post('/v1/posts/' + this.post.id + '/comments', postData, config
+          ).then(function () {
+            location.reload();
+          }).catch(err => {
+            console.log('err:', err.response.data);
           });
       }
     }

@@ -33,7 +33,12 @@
           cols="12"
           sm="8"
         >
-          <v-file-input @change="selectedFile" show-size counter multiple :rules="[valueRequired]" label="写真ファイル"></v-file-input>
+          <v-file-input
+            @change="selectedFile"
+            show-size counter multiple
+            :rules="[valueRequired]"
+            label="写真ファイル">
+          </v-file-input>
         </v-col>
       </v-row>
     </v-form>
@@ -56,7 +61,7 @@ export default {
     message: "",
     valueRequired: value => !!value || "必ず入力してください",
     counterRequired: counter => !!counter || "必ず入力してください", 
-    limitLengthTitle: value => value.length <= 30,
+    limitLengthTitle: value => value.length <= 30 || "30字以内にしてください",
     limitLengthContent: counter => counter.length <= 400 || "400字以内にしてください"
   }),
   methods: {
@@ -93,8 +98,6 @@ export default {
     },
     selectedFile: function(e){
       let file = e[0];
-      console.log(file);
-      console.log(typeof file);
       this.file = file;
     },
   }

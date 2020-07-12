@@ -84,8 +84,6 @@ async function getPosts(page, params){
   let posts = [];
   let length = 0;
 
-  console.log(params)
-
   await axios.get('/v1/posts', {params: params}
     ).then(function (response) {
       posts = response.data.posts;
