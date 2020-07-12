@@ -4,6 +4,7 @@
     max-width="800"
     class="mx-auto"
     v-else
+    dark
   >
     <v-container>
       <v-row
@@ -29,17 +30,17 @@
           cols="12"
           md="9"
         >
-          <v-card-title class="headline text--primary">{{ user.name }}</v-card-title>
+          <v-card-title class="white--text headline">{{ user.name }}</v-card-title>
         </v-col>
       </v-row>
       <v-card-actions>
         <v-spacer></v-spacer>
         <v-btn
-         v-show="same_user"
+         v-show="sameUser"
          class="white--text"
          :to="{name: 'UpdateUser', params: {userId: user.id}}"
          color="blue">
-         ユーザ情報を更新
+          <v-icon  color="white">mdi-update</v-icon>ユーザ情報を更新
         </v-btn>
       </v-card-actions>
 
@@ -102,11 +103,11 @@
     data: () => ({
       posts: [],
       user: {"photoUrl": ""},
-      user_id: null,
+      userId: null,
       page: 1,
       length: 0,
       loading: true,
-      same_user: false,
+      sameUser: false,
     }),
     mounted: async function () {
       let self = this;
@@ -117,9 +118,9 @@
               'Authorization': getCookieDataByKey("token")
             }
           };
-      self.user_id = self.$route.params.userId;
+      self.userId = self.$route.params.userId;
     
-      await  axios.get('/v1/posts', {params: {limit:limit, offset:self.page, id: self.user_id}}
+      await  axios.get('/v1/posts', {params: {limit:limit, offset:self.page, id: self.userId}}
         ).then(function (response) {
           self.posts = response.data.posts;
           self.length = Math.ceil(response.data.count/limit);
@@ -127,13 +128,13 @@
           console.log('err:', err.response);
         });
 
-      await axios.get('/v1/users/' + this.user_id, config, {}
+      await axios.get('/v1/users/' + this.userId, config, {}
         ).then(function (response){
           self.user = response.data.user;
           self.loading = false;
 
-          if (self.user.id == getCookieDataByKey("user_id")){
-            self.same_user = true;
+          if (self.user.id == getCookieDataByKey("userId")){
+            self.sameUser = true;
           }
         }).catch(err =>{
           console.log('err:', err);
@@ -144,10 +145,10 @@
         let self = this;
         let axios = createAxios();
         let limit = 3;
-        await  axios.get('/v1/posts', {params: {limit:limit, offset:self.page, id: self.user_id}}
+        await  axios.get('/v1/posts', {params: {limit:limit, offset:self.page, id: self.userId}}
           ).then(function (response) {
             self.posts = response.data.posts
-            self.length = Math.ceil(response.data.length/limit);
+            self.length = Math.ceil(response.data.count/limit);
           }).catch(err => {
             console.log('err:', err.response);
           });

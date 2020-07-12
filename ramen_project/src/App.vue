@@ -26,13 +26,27 @@
       </a>
       <v-spacer></v-spacer>
       <v-card-actions>
-        <v-btn color="grey" to="/">Topに戻る</v-btn>
-        <v-btn v-show="!isAuthenticated" color="grey" to="/Login">ログイン</v-btn>
-        <v-btn v-show="!isAuthenticated" color="grey" v-on:click="clickSimpleLogin">簡易ログイン</v-btn>
-        <v-btn v-show="!isAuthenticated" color="grey" to="/users/create">ユーザー登録</v-btn>
-        <v-btn v-show="isAuthenticated"  color="grey" v-on:click="deleteCookie">ログアウト</v-btn>
-        <v-btn v-show="isAuthenticated"  color="grey" to="/posts/create">投稿作成</v-btn>
-        <v-btn v-show="isAuthenticated"  color="grey" :to="{name: 'DetailUser', params: {userId: user_id}}">ユーザ画面</v-btn>
+        <v-btn color="grey" to="/">
+          Topに戻る
+        </v-btn>
+        <v-btn v-show="!isAuthenticated" color="grey" to="/Login">
+          <v-icon  color="white">mdi-login</v-icon>ログイン
+        </v-btn>
+        <v-btn v-show="!isAuthenticated" color="grey" v-on:click="clickSimpleLogin">
+          <v-icon  color="white">mdi-login</v-icon>簡易ログイン
+        </v-btn>
+        <v-btn v-show="!isAuthenticated" color="grey" to="/users/create">
+          <v-icon  color="white">mdi-account</v-icon>ユーザー登録
+        </v-btn>
+        <v-btn v-show="isAuthenticated"  color="grey" v-on:click="deleteCookie">
+          <v-icon  color="white">mdi-logout</v-icon>ログアウト
+        </v-btn>
+        <v-btn v-show="isAuthenticated"  color="grey" to="/posts/create">
+          <v-icon  color="white">mdi-pencil-box</v-icon>投稿作成
+        </v-btn>
+        <v-btn v-show="isAuthenticated"  color="grey" :to="{name: 'DetailUser', params: {userId: userId}}">
+          <v-icon  color="white">mdi-account</v-icon>ユーザ画面
+        </v-btn>
       </v-card-actions>
     </v-app-bar>
     <v-content
@@ -50,15 +64,15 @@ import getCookieDataByKey from "@/js/getCookieData.js"
 
 export default {
   data: () => ({
-    user_id: null,
+    userId: null,
   }),
   mounted: function () {
-    this.user_id = getCookieDataByKey("user_id")
+    this.userId = getCookieDataByKey("userId")
   },
   methods: {
     deleteCookie: function() {
       document.cookie = "token=;max-age=0";
-      document.cookie = "user_id=;max-age=0";
+      document.cookie = "userId=;max-age=0";
       document.cookie = "authenticated=;max-age=0";
       window.location.href = "/";
     },
@@ -78,4 +92,3 @@ export default {
   }
 }
 </script>
-
