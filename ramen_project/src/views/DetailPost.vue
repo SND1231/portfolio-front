@@ -4,7 +4,6 @@
     max-width="800"
     class="mx-auto"
     color="black"
-    dark
     v-else
   >
     <v-container>
@@ -52,20 +51,41 @@
           <v-card-text 
             class=".font-weight-bold"
             style="white-space:pre-wrap; word-wrap:break-word;"
-            v-text="post.content">
+            v-text="post.content"
+          >
           </v-card-text>
           <v-card-actions>
             <v-spacer></v-spacer>
-            <v-btn v-show="clickLike" v-on:click="createLike">
+            <v-btn
+              v-show="clickLike"
+              @click="createLike"
+            >
               <v-icon  color="pink">mdi-heart</v-icon> {{ showLikes(post.likes) }}
             </v-btn>
-            <v-btn v-show="!clickLike" v-on:click="deleteLike">
+            <v-btn
+              v-show="!clickLike"
+              @click="deleteLike"
+            >
               <v-icon v-show="!clickLike" disabled>mdi-heart</v-icon>{{ showLikes(post.likes) }}
             </v-btn>
-            <v-btn v-show="sameUser" :to="{name: 'UpdatePost', params: {postId: post.id}}" color="blue">
+            <v-btn
+              color="blue"
+              @click="openStoreInfo(post.storeInfo)"
+            >
+              <v-icon>mdi-storefront</v-icon>店情報
+            </v-btn>
+            <v-btn
+              v-show="sameUser"
+              :to="{name: 'UpdatePost', params: {postId: post.id}}"
+              color="blue"
+            >
               <v-icon  color="white">mdi-update</v-icon>投稿を更新
             </v-btn>
-            <v-btn v-show="sameUser" @click.stop="dialog = true" color="blue">
+            <v-btn
+              v-show="sameUser"
+              @click.stop="dialog = true"
+              color="blue"
+            >
               <v-icon  color="white">mdi-delete</v-icon>投稿を削除
             </v-btn>
           </v-card-actions>
@@ -104,8 +124,11 @@
         >
         </v-col>
       </v-row>
+      
+      <v-divider class="white my-10"></v-divider>
+
       <v-layout justify-center>
-        <title>コメント</title>
+        <v-card-title>コメント</v-card-title>
       </v-layout>
       <v-pagination
         v-model="page"
@@ -366,6 +389,9 @@
           }).catch(err => {
             console.log('err:', err.response.data);
           });
+      },
+      openStoreInfo: function(storeInfo) {
+        window.open(storeInfo, '_blank');
       }
     }
   }
