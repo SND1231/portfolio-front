@@ -4,7 +4,7 @@
       <h1 class="display-1">ログイン</h1>
     </v-card-title>
     <v-card-text>
-      <v-form ref="loginForm">
+      <v-form ref="login_form">
         <v-text-field v-model="email" :rules="emailRules" label="email" prepend-icon="mdi-account-circle" />
         <v-text-field v-model="password" :rules="passwordRules" v-bind:type="showPassword ? 'text' : 'password'" prepend-icon="mdi-lock" v-bind:append-icon="showPassword ? 'mdi-eye' : 'mdi-eye-off'" label="パスワード" @click:append="showPassword = !showPassword" />
       </v-form>
@@ -45,8 +45,8 @@ export default {
   }),
   methods: {
     clickLogin: function() {
-      console.log(this.$refs.loginForm.validate())
-      if (!this.$refs.loginForm.validate()){
+      console.log(this.$refs.login_form.validate())
+      if (!this.$refs.login_form.validate()){
           return
       }
       loginUser(this.email, this.password).then(data =>{
