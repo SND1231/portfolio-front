@@ -43,11 +43,11 @@
         >
           <v-card-title class=".font-weight-bold" v-text="post.title"></v-card-title>
           <v-img
-              :src="post.photoUrl"
-              class="white--text align-end"
-              gradient="to bottom, rgba(0,0,0,.1), rgba(0,0,0,.5)"
-              height="400px"
-            >
+            :src="post.photoUrl"
+            class="white--text align-end"
+            gradient="to bottom, rgba(0,0,0,.1), rgba(0,0,0,.5)"
+            height="400px"
+          >
           </v-img>
           <v-card-text 
             class=".font-weight-bold"
