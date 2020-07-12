@@ -1,6 +1,9 @@
 <template>
   <v-container>
-    <v-form ref="create_posts_form">
+    <v-form
+      ref="createPostsForm"
+      dark
+    >
       <v-row>
         <v-col
           cols="12"
@@ -9,7 +12,7 @@
           <v-text-field
             v-model="title"
             label="タイトル(30字以下)"
-            :rules="[value_required, limit_length_title]"
+            :rules="[valueRequired, limitLengthTitle]"
           ></v-text-field>
         </v-col>
         <v-col cols="12">
@@ -17,7 +20,7 @@
             v-model="content"
             color="teal"
             outlined
-            :rules="[counter_required, limit_length_content]"
+            :rules="[counterRequired, limitLengthContent]"
           >
             <template v-slot:label >
               <div>
@@ -30,7 +33,12 @@
           cols="12"
           sm="8"
         >
-          <v-file-input @change="selectedFile" show-size counter multiple :rules="[value_required]" label="写真ファイル"></v-file-input>
+          <v-file-input
+            @change="selectedFile"
+            show-size counter multiple
+            :rules="[valueRequired]"
+            label="写真ファイル">
+          </v-file-input>
         </v-col>
       </v-row>
     </v-form>
@@ -41,60 +49,57 @@
 </template>
 
 <script>
-  import createAxios from '@/js/createAxios.js'
-  import getCookieDataByKey from "@/js/getCookieData.js"
-  import uploadFile from "@/js/upload.js"
+import createAxios from '@/js/createAxios.js'
+import getCookieDataByKey from "@/js/getCookieData.js"
+import uploadFile from "@/js/upload.js"
 
-  export default {
-    data: () => ({
-      title: "",
-      content: "",
-      file: null,
-      message: "",
-      value_required: value => !!value || "必ず入力してください",
-      counter_required: counter => !!counter || "必ず入力してください", 
-      limit_length_title: value => value.length <= 30,
-      limit_length_content: counter => counter.length <= 400 || "400字以内にしてください"
-    }),
-    methods: {
-      createPosts: async function() {
-        if (!this.$refs.create_posts_form.validate()){
+export default {
+  data: () => ({
+    title: "",
+    content: "",
+    file: null,
+    message: "",
+    valueRequired: value => !!value || "必ず入力してください",
+    counterRequired: counter => !!counter || "必ず入力してください", 
+    limitLengthTitle: value => value.length <= 30 || "30字以内にしてください",
+    limitLengthContent: counter => counter.length <= 400 || "400字以内にしてください"
+  }),
+  methods: {
+    createPosts: async function() {
+      if (!this.$refs.createPostsForm.validate()){
+        return
+      }
+      
+      uploadFile(this.file).then(url => {
+        if (url == null){
           return
         }
-        
-        uploadFile(this.file).then(url => {
-          if (url == null){
-            return
-          }
 
-          var axios = createAxios();
-          const config = {
-            headers: {
-              'Authorization': getCookieDataByKey("token")
-            }
-          };
-          const post_data = {"title": this.title, "content": this.content,
-                            "photoUrl": url,"userId": getCookieDataByKey("user_id")
-                            };
-          
-          axios.post('/v1/posts', post_data, config
-            ).then(function () {
-              window.location.href = "/";
-            }).catch(err => {
-              console.log('err:', err.response.data);
-              this.message = err.response.data;
-            });
+        var axios = createAxios();
+        const config = {
+          headers: {
+            'Authorization': getCookieDataByKey("token")
+          }
+        };
+        const postData = {"title": this.title, "content": this.content,
+                          "photoUrl": url,"userId": getCookieDataByKey("userId")
+                          };
+        
+        axios.post('/v1/posts', postData, config
+          ).then(function () {
+            window.location.href = "/";
           }).catch(err => {
-            console.log(err);
+            console.log('err:', err.response.data);
+            this.message = err.response.data;
           });
-      },
-      selectedFile: function(e){
-        let file = e[0];
-        console.log(file);
-        console.log(typeof file);
-        this.file = file;
-      },
-    }
+        }).catch(err => {
+          console.log(err);
+        });
+    },
+    selectedFile: function(e){
+      let file = e[0];
+      this.file = file;
+    },
   }
-  
+}
 </script>

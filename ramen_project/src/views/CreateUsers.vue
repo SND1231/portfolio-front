@@ -1,6 +1,9 @@
 <template>
   <v-container>
-    <v-form ref="create_users_form">
+    <v-form
+      ref="createUsersForm"
+      dark
+    >
       <v-row>
         <v-col
           cols="12"
@@ -9,7 +12,7 @@
           <v-text-field
             v-model="name"
             label="ユーザー名(20字以下)"
-            :rules="[value_required]"
+            :rules="[valueRequired]"
           ></v-text-field>
         </v-col>
         <v-col
@@ -36,12 +39,14 @@
           cols="12"
           sm="8"
         >
-          <v-file-input @change="selectedFile" show-size counter multiple :rules="[value_required]" label="写真ファイル"></v-file-input>
+          <v-file-input @change="selectedFile" show-size counter multiple :rules="[valueRequired]" label="写真ファイル"></v-file-input>
         </v-col>
       </v-row>
     </v-form>
     <div class="text-right">
-      <v-btn class="ma-2 white--text" color="blue" v-on:click="createUsers">ユーザ登録</v-btn>
+      <v-btn class="ma-2 white--text" color="blue" v-on:click="createUsers">
+        ユーザ登録
+      </v-btn>
     </div>
   </v-container>
 </template>
@@ -58,7 +63,7 @@
       password: "",
       file: null,
       message: "",
-      value_required: value => !!value || "必ず入力してください",
+      valueRequired: value => !!value || "必ず入力してください",
       userNameRules:[
         value => !!value || "必ず入力してください",
         value => value.length <= 20,
@@ -77,7 +82,7 @@
     }),
     methods: {
       createUsers: function() {
-        if (!this.$refs.create_users_form.validate()){
+        if (!this.$refs.createUsersForm.validate()){
           return
         }
         
@@ -85,14 +90,14 @@
           if (url == null){
             return
           }
-          const post_data = {"name": this.name, "email": this.email,
+          const postData = {"name": this.name, "email": this.email,
                              "password": this.password, "photoUrl": url,
                             };
           var axios = createAxios();
-          axios.post('/v1/users', post_data
+          axios.post('/v1/users', postData
             ).then(function (response) {
               document.cookie = 'token=' + response.data.token;
-              document.cookie = 'user_id=' + response.data.id;
+              document.cookie = 'userId=' + response.data.id;
               document.cookie = 'authenticated=True';
               window.location.href = "/";
             }).catch(err => {

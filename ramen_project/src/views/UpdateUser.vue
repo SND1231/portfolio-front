@@ -1,7 +1,7 @@
 <template>
   <Loading v-if="loading"></Loading>
   <v-container v-else>
-    <v-form ref="update_users_form">
+    <v-form ref="updateUsersForm">
       <v-row>
         <v-col
           cols="12"
@@ -28,79 +28,80 @@
 </template>
 
 <script>
-  import createAxios from '@/js/createAxios.js'
-  import getCookieDataByKey from "@/js/getCookieData.js"
-  import uploadFile from "@/js/upload.js"
-  import Loading from "@/components/Loading";
+import createAxios from '@/js/createAxios.js'
+import getCookieDataByKey from "@/js/getCookieData.js"
+import uploadFile from "@/js/upload.js"
+import Loading from "@/components/Loading";
 
-  export default {
-    name: 'CreateUsers',
-    data: () => ({
-      name: "",
-      file: null,
-      photo_url: null,
-      message: "",
-      loading: true,
-      user_id: getCookieDataByKey("user_id"),
-      value_required: value => !!value || "必ず入力してください",
-      userNameRules:[
-        value => !!value || "必ず入力してください",
-        value => value.length <= 20 || "20字以下にしてください",
-      ],
-    }),
-    components: { Loading },
-    mounted: async function () {
-      let axios = createAxios();
-      const config = {
-            headers: {
-              'Authorization': getCookieDataByKey("token")
-            }
-          };
-      let self = this; 
+export default {
+  name: 'CreateUsers',
+  data: () => ({
+    name: "",
+    file: null,
+    photoUrl: null,
+    message: "",
+    loading: true,
+    userId: getCookieDataByKey("userId"),
+    valueRequired: value => !!value || "必ず入力してください",
+    userNameRules:[
+      value => !!value || "必ず入力してください",
+      value => value.length <= 20 || "20字以下にしてください",
+    ],
+  }),
+  components: { Loading },
+  mounted: async function () {
+    let axios = createAxios();
+    const config = {
+          headers: {
+            'Authorization': getCookieDataByKey("token")
+          }
+        };
+    let self = this; 
 
-      await axios.get('/v1/users/' + self.user_id, config, {}
-        ).then(function (response){
-          self.name = response.data.user.name;
-          self.loading = false;
-        }).catch(err =>{
-          console.log('err:', err);
+    await axios.get('/v1/users/' + self.userId, config, {}
+      ).then(function (response){
+        self.name = response.data.user.name;
+        self.loading = false;
+      }).catch(err =>{
+        console.log('err:', err);
+      });
+  },
+  methods: {
+    createUsers: function() {
+      if (!this.$refs.updateUsersForm.validate()){
+        return
+      }
+      
+      uploadFile(this.file).then(url => {
+        let self = this;
+        var axios = createAxios();
+        const config = {
+          headers: {
+            'Authorization': getCookieDataByKey("token")
+          }
+        };
+        
+        let photoUrl = url
+        if (url == null){
+          photoUrl = self.photoUrl
+        }
+        const postData = {"name": this.name, "photoUrl": photoUrl};
+        
+        axios.put('/v1/users/' + self.userId , postData, config
+          ).then(function () {
+            window.location.href = "/users/" + self.userId;
+          }).catch(err => {
+            console.log('err:', err.response.data);
+            this.message = err.response.data;
+          });
+        }).catch(err => {
+          console.log(err);
         });
     },
-    methods: {
-      createUsers: function() {
-        if (!this.$refs.update_users_form.validate()){
-          return
-        }
-        
-        uploadFile(this.file).then(url => {
-          let self = this;
-          var axios = createAxios();
-          const config = {
-            headers: {
-              'Authorization': getCookieDataByKey("token")
-            }
-          };
-          let photo_url = url
-          if (url == null){
-            photo_url = self.photo_url
-          }
-          const post_data = {"name": this.name, "photoUrl": photo_url};
-          
-          axios.put('/v1/users/' + self.user_id , post_data, config
-            ).then(function () {
-              window.location.href = "/users/" + self.user_id;
-            }).catch(err => {
-              console.log('err:', err.response.data);
-              this.message = err.response.data;
-            });
-          }).catch(err => {
-            console.log(err);
-          });
-      },
-      selectedFile: function(e){
-        let file = e[0];
-        this.file = file;
-      },
-    }
+    selectedFile: function(e){
+      let file = e[0];
+      this.file = file;
+    },
   }
+}
 </script>

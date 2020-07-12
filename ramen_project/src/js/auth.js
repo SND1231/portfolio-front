@@ -9,7 +9,7 @@ export default async function loginUser(email, password){
   ).then(function (response) {
     // cookieとしてトークンを付与
     document.cookie = 'token=' + response.data.token;
-    document.cookie = 'user_id=' + response.data.id;
+    document.cookie = 'userId=' + response.data.id;
     document.cookie = 'authenticated=True';
     window.location.href = "/";
   }).catch(err => {

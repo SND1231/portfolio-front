@@ -12,4 +12,9 @@ services:
     ports:
       - 8080:80
     tty: true
+    networks:
+      - app_network
 
+networks:
+  app_network:
+    external: true
