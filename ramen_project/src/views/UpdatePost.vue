@@ -26,6 +26,16 @@
             </template>
           </v-textarea>
         </v-col>
+        <v-col
+          cols="12"
+          sm="8"
+        >
+          <v-text-field
+            v-model="storeInfo"
+            label="店情報のURL"
+            :rules="[urlCheck]"
+          ></v-text-field>
+        </v-col>
       </v-row>
     </v-form>
     <div class="text-right">
@@ -43,10 +53,12 @@ export default {
   data: () => ({
     title: "",
     content: "",
+    storeInfo: "",
     valueRequired: value => !!value || "必ず入力してください",
     counterRequired: counter => !!counter || "必ず入力してください", 
-    limitLengthTitle: value => value.length <= 30,
-    limitLengthContent: counter => counter.length <= 400 || "400字以内にしてください"
+    limitLengthTitle: value => value.length <= 30 || "30字以内にしてください",
+    limitLengthContent: counter => counter.length <= 400 || "400字以内にしてください",
+    urlCheck: value => !value || /https?:/.test(value) || "URLを入力してください"
   }),
   mounted: async function () {
     let axios = createAxios();
@@ -61,6 +73,7 @@ export default {
       ).then(function (response) {
         self.title = response.data.post.title;
         self.content = response.data.post.content;
+        self.storeInfo = response.data.post.storeInfo;
       }).catch(err => {
         console.log(err);
       });
@@ -73,7 +86,8 @@ export default {
               'Authorization': getCookieDataByKey("token")
             }
           };
-      const postData = {"title": this.title, "content": this.content};
+      const postData = {"title": this.title, "content": this.content,
+                        "storeInfo": this.storeInfo};
       let postId = this.$route.params.postId
 
       axios.put('/v1/posts/' + postId, postData, config

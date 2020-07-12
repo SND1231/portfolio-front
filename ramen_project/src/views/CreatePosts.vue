@@ -40,6 +40,16 @@
             label="写真ファイル">
           </v-file-input>
         </v-col>
+        <v-col
+          cols="12"
+          sm="8"
+        >
+          <v-text-field
+            v-model="storeInfo"
+            label="店情報のURL"
+            :rules="[urlCheck]"
+          ></v-text-field>
+        </v-col>
       </v-row>
     </v-form>
     <div class="text-right">
@@ -58,11 +68,13 @@ export default {
     title: "",
     content: "",
     file: null,
+    storeInfo: "",
     message: "",
     valueRequired: value => !!value || "必ず入力してください",
     counterRequired: counter => !!counter || "必ず入力してください", 
     limitLengthTitle: value => value.length <= 30 || "30字以内にしてください",
-    limitLengthContent: counter => counter.length <= 400 || "400字以内にしてください"
+    limitLengthContent: counter => counter.length <= 400 || "400字以内にしてください",
+    urlCheck: value => !value || /https?:/.test(value) || "URLを入力してください"
   }),
   methods: {
     createPosts: async function() {
@@ -82,7 +94,8 @@ export default {
           }
         };
         const postData = {"title": this.title, "content": this.content,
-                          "photoUrl": url,"userId": getCookieDataByKey("userId")
+                          "photoUrl": url, "userId": getCookieDataByKey("userId"),
+                          "storeInfo": this.storeInfo
                           };
         
         axios.post('/v1/posts', postData, config

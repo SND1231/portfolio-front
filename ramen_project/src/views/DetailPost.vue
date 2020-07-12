@@ -69,6 +69,7 @@
               <v-icon v-show="!clickLike" disabled>mdi-heart</v-icon>{{ showLikes(post.likes) }}
             </v-btn>
             <v-btn
+              v-show="post.storeInfo != undefined"
               color="blue"
               @click="openStoreInfo(post.storeInfo)"
             >
@@ -79,7 +80,7 @@
               :to="{name: 'UpdatePost', params: {postId: post.id}}"
               color="blue"
             >
-              <v-icon  color="white">mdi-update</v-icon>投稿を更新
+              <v-icon  color="white">mdi-update</v-icon>投稿を編集
             </v-btn>
             <v-btn
               v-show="sameUser"
