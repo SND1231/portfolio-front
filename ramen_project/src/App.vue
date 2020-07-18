@@ -10,7 +10,7 @@
           alt="Ramen Logo"
           class="shrink mr-2"
           contain
-          src="@/img/ramen_img.png"
+          src="@/static/ramen_img.png"
           transition="scale-transition"
           width="40"
         />
@@ -20,7 +20,7 @@
           class="shrink mt-1 hidden-sm-and-down"
           contain
           min-width="100"
-          src="@/img/ramen_top_font.png"
+          src="@/static/ramen_top_font.png"
           width="100"
         />
       </a>
@@ -53,7 +53,13 @@
       color="blue"
       dark
     >
-      <router-view></router-view>
+      <v-img
+        dark
+        src="@/static/bg.png"
+        height=auto
+      >
+        <router-view></router-view>
+      </v-img>
     </v-content>
   </v-app>
 </template>

@@ -44,6 +44,8 @@
         </v-btn>
       </v-card-actions>
 
+      <v-divider class="white my-10"></v-divider>
+
       <v-layout justify-center>
         <v-card-title>ユーザの投稿一覧</v-card-title>
       </v-layout>
