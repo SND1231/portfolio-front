@@ -6,6 +6,10 @@ build:
     context: .
     docker:
       dockerfile: ./docker/Dockerfile
+      buildArgs:
+        CLOUDINARY_API_KEY: "{{.CLOUDINARY_API_KEY}}"
+        CLOUD_NAME: "{{.CLOUD_NAME}}"
+        API_ENDPOINT: "{{.API_ENDPOINT}}"
   local:
     push: true
 
