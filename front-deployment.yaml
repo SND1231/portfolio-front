@@ -1,0 +1,24 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: front-deployment
+  labels:
+    app: ap
+    back: front
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: ap
+      back: front
+  template:
+    metadata:
+      labels:
+        app: ap
+        back: front
+    spec:
+      containers:
+      - name: front
+        image: snd1231/front
+        ports:
+        - containerPort: 80

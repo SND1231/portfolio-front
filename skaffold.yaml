@@ -1,0 +1,20 @@
+apiVersion: skaffold/v1
+kind: Config
+build:
+  artifacts:
+  - image: snd1231/front
+    context: .
+    docker:
+      dockerfile: ./docker/Dockerfile
+      buildArgs:
+        CLOUDINARY_API_KEY: "{{.CLOUDINARY_API_KEY}}"
+        CLOUD_NAME: "{{.CLOUD_NAME}}"
+        API_ENDPOINT: "{{.API_ENDPOINT}}"
+  local:
+    push: true
+
+deploy:
+  kubectl:
+    manifests:
+      - front-deployment.yaml
+
